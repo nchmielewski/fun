@@ -1,5 +1,6 @@
 import math
 import unittest
+import yahtzeehelper as yh
 
 def poss():
     L=[]
@@ -32,7 +33,7 @@ def bhelp(n,i):     # init n=[0,0,0,0,0], i=4, func counts +1 given binary numbe
         
     else:
         return bhelp(n,i-1)
-
+#   recursive function, init pass i=4 to aid recursion
 def shelp(n,i):
     #overflow
     if i==-1:
@@ -53,8 +54,12 @@ def shelp(n,i):
     # else recurse to next bit
     else:
         return shelp(n,i-1)
-    
-def roll(dice,L):#all possible combinations of a given die
+
+# all possible combinations of a given die
+# dice provides the actual die set, L provides binary notation as to which indexes are to be rolled?
+def roll(dice,L):
+
+    # choosing will have separate func
     #chose 1
     #alternate between bits
     for x in L:
@@ -81,6 +86,14 @@ def check(dice, roll):
 
 # TODO create main for driver code
 #driver
+
+possibilities = []
+die = [1, 1, 1, 1, 1]
+while die != [6, 6, 6, 6, 6]:
+    shelp(die, 4)
+    print(die)
+# TODO figure out why the fuck die ends up as [0, 0, 0, 0, 1]
+
 """
 L=[]
 y = [1,1,1,1,1]
