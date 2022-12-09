@@ -1,13 +1,15 @@
 # horses
-Program to calculate and maintain a database of stats of minecraft horses.
-By using this tool, we can better manage stats of the herd to create the most perfect horse possible.
+Program to handle stats of minecraft horses.  The stats can be calculated and then kept in a database.
+By using this tool, we can better manage stats of the herd to breed the most perfect horse possible.
 
 ### How is this done?
+A minecraft horse has three stats: Health, Jump, and Speed. 
 The stats of a horse can be measured in game based on how many hearts it has, how high it can jump, and how fast it can run.
 A horse can be a randomly generated mob or bred by two horses into a foal (baby horse :D).
 
 The stats of a foal is calculated in game using a simple equation, where it utilizes the stats of the parents and the stats of a randomly generated horse.
-The foal inherits some of the parents' traits, but it mutates via the random stats.
+The foal inherits some of the parents' traits, but it mutates slightly via the random stats.
+
 Let F be the stats of the foal, Pa be the stats of parent A, Pb be the stats of parent B, and R be the stats of the random stats:
 F = (Pa + Pb)/3 + R/3
 
