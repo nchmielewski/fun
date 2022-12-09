@@ -1,5 +1,4 @@
 import math
-import unittest
 import yahtzeehelper as yh
 
 def poss():
@@ -33,6 +32,7 @@ def bhelp(n,i):     # init n=[0,0,0,0,0], i=4, func counts +1 given binary numbe
         
     else:
         return bhelp(n,i-1)
+
 #   recursive function, init pass i=4 to aid recursion
 def shelp(n,i):
     #overflow
@@ -90,9 +90,11 @@ def check(dice, roll):
 possibilities = []
 die = [1, 1, 1, 1, 1]
 while die != [6, 6, 6, 6, 6]:
-    shelp(die, 4)
+    i = shelp(die, 4)
     print(die)
-# TODO figure out why the fuck die ends up as [0, 0, 0, 0, 1]
+    possibilities.append(die)
+print(possibilities)
+# TODO figure out why the fuck possibilities is just [6, 6, 6, 6, 6]
 
 """
 L=[]
@@ -118,4 +120,3 @@ while False:
     v = tuple(input("Second Roll\nEnter die: "))
     print(v)
 """
-print(bhelp([0,0,0,0,0], 4))
