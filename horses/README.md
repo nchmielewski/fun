@@ -14,6 +14,6 @@ Let F be the stats of the foal, Pa be the stats of parent A, Pb be the stats of 
 
 F = (Pa + Pb)/3 + R/3
 
-By measuring the stats of the foal we can determing the random stats R.  In this way, we can determine if the random stats were high or low.
+By measuring the stats of the foal we can determine the random stats R.  In this way, we can calculate if the random stats were high or low.
 If the stats are high, this foal will be a promising future breeder as RNJesus has blessed us with a good roll.
 If the stats are low, this foal is kinda dead weight and not fruitful progression for the herd to the most perfect horse and we could cull the foal (baby horse D:).
