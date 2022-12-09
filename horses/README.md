@@ -11,6 +11,7 @@ The stats of a foal is calculated in game using a simple equation, where it util
 The foal inherits some of the parents' traits, but it mutates slightly via the random stats.
 
 Let F be the stats of the foal, Pa be the stats of parent A, Pb be the stats of parent B, and R be the stats of the random stats:
+
 F = (Pa + Pb)/3 + R/3
 
 By measuring the stats of the foal we can determing the random stats R.  In this way, we can determine if the random stats were high or low.
