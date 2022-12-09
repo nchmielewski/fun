@@ -1,5 +1,5 @@
 # horses
-Program to handle stats of minecraft horses.  The stats can be calculated and then kept in a database.
+Program to handle stats of minecraft horses.  The stats can be calculated/measured and then kept in a database.
 By using this tool, we can better manage stats of the herd to breed the most perfect horse possible.
 
 ### How is this done?
