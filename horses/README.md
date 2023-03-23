@@ -11,7 +11,7 @@ A horse can be a randomly generated mob or bred by two horses into a foal (baby 
 
 
 
-#Archieved
+# Archieved
 Mojang changed the way horses are bred in Minecraft update 1.19.4.  We can keep this implementation to support older versions of Minecraft.
 ### How is this done?
 A minecraft horse has three stats: Health, Jump, and Speed. 
