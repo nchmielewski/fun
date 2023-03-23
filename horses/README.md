@@ -7,6 +7,17 @@ A minecraft horse has three stats: Health, Jump, and Speed.
 The stats of a horse can be measured in game based on how many hearts it has, how high it can jump, and how fast it can run.
 A horse can be a randomly generated mob or bred by two horses into a foal (baby horse :D).
 
+
+
+
+
+#Archieved
+Mojang changed the way horses are bred in Minecraft update 1.19.4.  We can keep this implementation to support older versions of Minecraft.
+### How is this done?
+A minecraft horse has three stats: Health, Jump, and Speed. 
+The stats of a horse can be measured in game based on how many hearts it has, how high it can jump, and how fast it can run.
+A horse can be a randomly generated mob or bred by two horses into a foal (baby horse :D).
+
 The stats of a foal is calculated in game using a simple equation, where it utilizes the stats of the parents and the stats of a randomly generated horse.
 The foal inherits some of the parents' traits, but it mutates slightly via the random stats.
 
