@@ -23,9 +23,13 @@ class ConnectFour():
                 B.placeToken(val)
             else:
                 A.placeToken(self)
-                                        # after a turn is played, we check for dubs
-            if self.checkFor4() == 0:   # if no connect 4, continue w/ while loop
-                continue
-            else:                       # if connect 4, break while loop
+
+            # after a turn is played, we check for dubs
+            if self.checkFor4() == 0:                       # if no connect 4, continue w/ while loop
+                self.turn = not self.turn                   # switch next turn
+            else:                                           # if connect 4, break while loop
                 break
+
         # declare winner
+        print("///////   GAME OVER   ///////", '\n', "Winner: ", 'Player' if self.turn == True else 'Computer')
+        self.board.printBoard()

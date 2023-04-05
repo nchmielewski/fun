@@ -29,7 +29,6 @@ class Board():
             # if every token does not have a connection, return no connection
             return 0
 
-    # TODO fix this shit
     def check(self, x, y, connect, toggle):             # recursively checks for connections, returns connect
         # list for toggle direction
         l = [(x-1, y), (x+1, y), (x, y-1), (x, y+1), (x-1, y-1), (x+1, y+1), (x-1, y+1), (x+1, y-1)]
