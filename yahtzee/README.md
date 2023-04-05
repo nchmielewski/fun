@@ -20,6 +20,8 @@ When we count in base-2 we also count from right to left; we count the same way,
 The process is the same between each set, so the same logic can be applied to counting possible die aka base-6.
 
 ### Why 7776 total possible combinations?
+##### Devs: Its just counting in binary, but replace the range of numbers to 0-5.
+
 The way we come upon 7776 is by a concept called positional notation.  If you can count numbers, you intuitively already understand this concept.
 There are two sets of numbers to consider: the range of numbers which are used (0-9 for base-10, 0-1 for base-2) and the position of the left-most/greatest/most-significant digit.
 
@@ -62,7 +64,7 @@ Two die?  6^2 = 36
 
 What if we have five die (like in Yahtzee!)?  6^5 = 7776
 
-For more information, check out this wiki page: https://en.wikipedia.org/wiki/Positional_notation
+##### For more information, check out this wiki page: https://en.wikipedia.org/wiki/Positional_notation
 
 ### How are probabilities calculated?
 The program searches the list given a set of die and finds possible matches for every "score box" with the inputted set of die.
