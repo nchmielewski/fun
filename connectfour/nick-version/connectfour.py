@@ -96,14 +96,20 @@ class ConnectFour():
     def placeToken(self, coord):            # coord is a tuple
         if self.board.get(coord) != 0:      # if spot is not vacant
             print('This spot is taken!')
-            return 1                        # return 1 to indicate retry
+            return False                    # return to indicate retry
         else:
+            coord = self.column(coord)
             if self.turn is True:           # if player's turn, else PC's turn
                 self.board.update({coord: 1})
             else:
                 self.board.update({coord: 2})
-            return 0                        # return 0 to indicate "smooth sailing"
+            return True                     # return to indicate "smooth sailing"
     
-    # given
-    def column():
-        pass
+    def column(self, coord):
+        old, t = coord                      # t for 🗑️
+        for i in self.board:                # board is read, bottom to top, left to right,
+            new, t = i
+            j = self.board.get(i)           
+            if old == new and j == 0:         # if coord in the same column, and this coord is empty
+                return i                    # return top
+                                            # if no return, column is full!
