@@ -6,7 +6,6 @@ class ConnectFour():
         self.board = dict()
         self.turn = True    # True/Player  False/PC
         self.OGV = 0
-        self.height = [0, 0, 0, 0, 0, 0, 0]
         self.score = '0/0/0'
 
     def createBoard(self):              # creates board for the first time
@@ -53,6 +52,7 @@ class ConnectFour():
                 continue
         return 0    # if every token does not have a connection, return no connection
 
+    # TODO fix this shit
     def check(self, x, y, connect, toggle):         # recursively checks for connections, returns connect
         # list for toggle direction
         l = [(x-1, y), (x+1, y), (x, y-1), (x, y+1), (x-1, y-1), (x+1, y+1), (x-1, y+1), (x+1, y-1)]
