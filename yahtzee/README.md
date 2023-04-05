@@ -20,9 +20,9 @@ When we count in base-2 we also count from right to left; we count the same way,
 The process is the same between each set, so the same logic can be applied to counting possible die aka base-6.
 
 ### Why 7776 total possible combinations?
-The way we come upon 7776 is by a concept called positional notation.  For devs, its just counting in binary, but replace the range of numbers to 0-5.  More info below.
+For devs, its just counting in binary, but replace the range of numbers to 0-5.  More info below.
 
-If you can count numbers, you intuitively already understand this concept.
+The way we come upon 7776 is by a concept called positional notation.  If you can count numbers, you intuitively already understand this concept.
 There are two sets of numbers to consider: the range of numbers which are used (0-9 for base-10, 0-1 for base-2) and the position of the left-most/greatest/most-significant digit.
 
 Positional notation can be calculated by a simple base and exponent, where the range (R) is the base number and the position (P) is the exponent: R ^ P
