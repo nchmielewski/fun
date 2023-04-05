@@ -64,7 +64,7 @@ Two die?  6^2 = 36
 
 What if we have five die (like in Yahtzee!)?  6^5 = 7776
 
-For more information, check out this wiki page: https://en.wikipedia.org/wiki/Positional_notation
+##### For more information, check out this wiki page: https://en.wikipedia.org/wiki/Positional_notation
 
 ### How are probabilities calculated?
 The program searches the list given a set of die and finds possible matches for every "score box" with the inputted set of die.
