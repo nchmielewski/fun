@@ -1,4 +1,4 @@
-from connectfour2 import ConnectFour
+from connectfour import ConnectFour
 
 c4 = ConnectFour()
 c4.createBoard()

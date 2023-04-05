@@ -1,8 +1,7 @@
-class AI:
-    def placeTokenAI(self):
-        pass
+import AI
 
-class ConnectFour(AI):
+# main/driver code
+class ConnectFour():
     def __init__(self):
         self.board = dict()
         self.turn = True    # True/Player  False/PC
@@ -10,21 +9,21 @@ class ConnectFour(AI):
         self.height = [0, 0, 0, 0, 0, 0, 0]
         self.score = '0/0/0'
 
-    def createBoard(self):  # creates board for the first time
+    def createBoard(self):              # creates board for the first time
         for y in range(1, 7):
             for x in range(1, 8):
                 self.board.update({(x, y): 0})
         print(self.board)
 
     def run(self):
-        self.createBoard()  # on start up, create a new board
-        while True:         # runs until checkFor4 returns 1
-            if self.turn is True:   # if player turn, else PC turn
+        self.createBoard()              # on start up, create a new board
+        while True:                     # runs until checkFor4 returns 1
+            if self.turn is True:       # if player turn, else PC turn
                 val = input("Enter coordinate: ")
                 self.placeToken(val)
             else:
                 AI.placeTokenAI(self)
-            # after a turn is played, we check for dubs
+                                        # after a turn is played, we check for dubs
             if self.checkFor4() == 0:   # if no connect 4, continue w/ while loop
                 continue
             else:                       # if connect 4, break while loop
@@ -34,6 +33,7 @@ class ConnectFour(AI):
     def checkFor4(self):    # checks for dubs, returns 0 if no connection, returns 1 if connection matches
         for k, v in self.board.items():
             if v != 0:      # if spot is taken, if spot is not empty
+
                 x, y = k    # unpack coord from the tuple key
                 # the first direction takes care of initial token, second direction starts with next coordinate
                 # check left (x-1, y) then right (x+1, y)
@@ -48,6 +48,7 @@ class ConnectFour(AI):
                 # check bottom left (x-1, y+1) then top right (x+1, y-1)
                 if self.check(x+1, y-1, self.check(x, y, 0, 6), 7) >= 4:
                     return 1
+                
             else:
                 continue
         return 0    # if every token does not have a connection, return no connection
@@ -71,7 +72,7 @@ class ConnectFour(AI):
             self.check(x, y, connect, toggle)      # recursive call
         print('nothing happened')
 
-    def printBoard(self):   # prints board
+    def printBoard(self):
         L = []
         LL = []
         i = 0
@@ -92,13 +93,17 @@ class ConnectFour(AI):
             print(x)
         print()     # prints new line
 
-    def placeToken(self, coord):    # coord is a tuple
-        if self.board.get(coord) != 0:   # if spot is not vacant
+    def placeToken(self, coord):            # coord is a tuple
+        if self.board.get(coord) != 0:      # if spot is not vacant
             print('This spot is taken!')
-            return 1    # return 1 to indicate retry
+            return 1                        # return 1 to indicate retry
         else:
-            if self.turn is True:  # if player's turn, else PC's turn
+            if self.turn is True:           # if player's turn, else PC's turn
                 self.board.update({coord: 1})
             else:
                 self.board.update({coord: 2})
-            return 0    # return 0 to indicate "smooth sailing"
+            return 0                        # return 0 to indicate "smooth sailing"
+    
+    # given
+    def column():
+        pass
