@@ -2,11 +2,11 @@ import random
 
 def convert(s):
     if s == ('r' or 'rock' or 'R' or 'Rock'):
-        return 'r'
+        return 'Rock'
     elif s == ('p' or 'paper' or 'P' or 'Paper'):
-        return 'r'
+        return 'Paper'
     elif s == ('s' or 'scissors' or 'S' or 'Scissors'):
-        return 's'
+        return 'Scissors'
     
     else: return 'e'
 
@@ -22,20 +22,25 @@ while True:
     print("Let's play rock paper scissors.  The computer will randomly pick an option.", '\n', "Enter your choice: ")
     i = input()
 
-    com = random.choice(['r', 'p' ,'s'])
+    com = random.choice(['Rock', 'Paper' ,'Scissors'])
     i = convert(i)
+    
+    if i == 'e':
+        print('Not valid option!  Please enter r/R/rock/Rock or p/P/paper/Paper or s/S/scissors/Scissors')
+        continue
+
     v = verdict(i, com)
 
     match v:
         case 0:
             print(f'{i} beats {v} - Player wins!')
-            score[0] = str(int(score[0]) + 1)
+            
         case 1:
             print(f'{v} beats {i} - Computer wins!')
-            score[8] = str(int(score[8]) + 1)
+            
         case 2:
             print(f'Both picked {i} - Tie!')
-            score[4] = str(int(score[4]) + 1)
+            
 
 
 
