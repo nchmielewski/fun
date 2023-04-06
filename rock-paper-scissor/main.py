@@ -56,8 +56,7 @@ while True:
             print(f'Both picked {i} - Tie!')
             score[2] += 1    
     
-    print(f'Player won {score[0]}   Computer won {score[1]}   {score[2]} Ties')
-    print('\n')  
+    print(f'Player won {score[0]}   Computer won {score[1]}   {score[2]} Ties', '\n')  
               
 
 
