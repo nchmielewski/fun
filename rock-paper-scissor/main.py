@@ -34,7 +34,7 @@ print("Let's play rock paper scissors.  The computer will randomly pick an optio
 while True:
     i = input("Enter your choice: ")
 
-    com = random.choice(['Rock', 'Paper' ,'Scissors'])
+    com = random.choice(['Rock', 'Paper', 'Scissors'])
     i = convert(i)
     
     if i == 'e':
