@@ -50,13 +50,13 @@ while True:
             
         case 1:
             print(f'{com} beats {i} - Computer wins!')
-            score[2] += 1
+            score[1] += 1
             
         case 2:
             print(f'Both picked {i} - Tie!')
-            score[1] += 1    
+            score[2] += 1    
     
-    print(f'Player won {score[0]}   Computer won {score[2]}   {score[1]} Ties')
+    print(f'Player won {score[0]}   Computer won {score[1]}   {score[2]} Ties')
     print('\n')  
               
 
