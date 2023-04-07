@@ -4,7 +4,8 @@ class AI:
     def __init__(self):
             self.board = B.Board()
 
-    def updateBoard
+    def updateBoard(self):
+        pass
 
     def placeTokenAI(self):
         pass

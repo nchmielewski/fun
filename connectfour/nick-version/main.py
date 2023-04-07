@@ -14,7 +14,6 @@ class ConnectFour():
                 self.game.board.update({(x, y): 0})
         print(self.game.board)
 
-    # TODO make sure this runs with new classes
     def run(self):
         self.createBoard()              # on start up, create a new board
         while True:                     # runs until checkFor4 returns 1
@@ -33,3 +32,6 @@ class ConnectFour():
         # declare winner
         print("///////   GAME OVER   ///////", '\n', "Winner: ", 'Player' if self.turn == True else 'Computer')
         self.game.board.printBoard()
+
+x = ConnectFour()
+x.run

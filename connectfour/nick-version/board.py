@@ -1,9 +1,9 @@
-import main
 
 # backend
 class Board():
     def __init__(self):
             self.board = dict()
+            self.turn = True    # True/Player  False/PC
 
     def checkFor4(self):        # checks for dubs, returns 0 if no connection, returns 1 if connection matches
             for k, v in self.board.items():
@@ -37,8 +37,8 @@ class Board():
             print('found')
             return connect                              # base case
 
-        elif self.board.get((x, y)) is not main.OGV:    # if coord vacant, off board, or opposing side, end count
-            print('OGV = ', main.OGV, '\n', 'self.board.get((x, y) = ', self.board.get((x, y)))
+        elif self.board.get((x, y)) is not 0:    # if coord vacant, off board, or opposing side, end count
+            print('OGV = ', 0, '\n', 'self.board.get((x, y) = ', self.board.get((x, y)))
             print('Failed.')
             return connect
 
@@ -69,7 +69,7 @@ class Board():
             print(x)
         print()     # prints new line
 
-    def placeToken(self, coord):            # coord is a tuple
+    def s(self, coord):            # coord is a tuple
         if self.board.get(coord) != 0:      # if spot is not vacant
             print('This spot is taken!')
             return False                    # return to indicate retry
