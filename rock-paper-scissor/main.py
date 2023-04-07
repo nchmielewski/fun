@@ -1,11 +1,11 @@
 import random
 
 def convert(s):
-    if s == 'r' or 'rock' or 'R' or 'Rock':
+    if s == 'r' or s == 'rock' or s == 'R' or s == 'Rock':
         return 'Rock'
-    elif s == 'p' or 'paper' or 'P' or 'Paper':
+    elif s == 'p' or s == 'paper' or s == 'P' or s == 'Paper':
         return 'Paper'
-    elif s == 's' or 'scissors' or 'S' or 'Scissors':
+    elif s == 's' or s == 'scissors' or s == 'S' or s == 'Scissors':
         return 'Scissors'
     
     else: return 'e'
