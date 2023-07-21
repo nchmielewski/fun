@@ -27,17 +27,17 @@ int decide(int AI, string x) {
     case 0:
       cout << "Computer picked rock" << endl;
       if (x == "p") return 1;
-      elif (x == "s") return 2;
+      else if (x == "s") return 2;
       else return 0;
     case 1:
       cout << "Computer picked paper" << endl;
       if (x == "s") return 1;
-      elif (x == "r") return 2;
+      else if (x == "r") return 2;
       else return 0;
     case 2:
       cout << "Computer picked scissors" << endl;
       if (x == "r") return 1;
-      elif (x == "p") return 2;
+      else if (x == "p") return 2;
       else return 0;
 }
 
@@ -55,17 +55,22 @@ int main() {
       cout << "Please type normally" << endl;
       continue;
     }
-    elif (convert(x) == "normally") {
+    else if (convert(x) == "normally") {
       cout << "Alright wise guy, haha!" << endl;
       continue;
     }
 
     int AI = rand() % 3;    // 0 rock, 1 paper, 2 scissors
     
-    bool result = decide(AI, player);
+    int result = decide(AI, player);
 
-    if result{ return 0 }
-    
+    if (result == 0) continue;
+    else if (result == 1) {
+      cout << "Congratulations!  You beat the Computer :D" << endl;
+    }
+    else if (result == 2) {
+      cout << "You are a loser... dang." << endl;
+    }
   }
   
 }
