@@ -57,6 +57,7 @@ int main() {
     }
     elif (convert(x) == "normally") {
       cout << "Alright wise guy, haha!" << endl;
+      continue;
     }
 
     int AI = rand() % 3;    // 0 rock, 1 paper, 2 scissors
