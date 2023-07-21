@@ -43,6 +43,9 @@ int main() {
     
     int AI = rand() % 3;    // 0 rock, 1 paper, 2 scissors
     
+    bool result = decide(AI, x);
+
+    if result{ return 0 }
     
   }
   
