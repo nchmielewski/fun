@@ -1,4 +1,4 @@
-# Ideas for repos
+Ideas for repos
 
 frontend practice
 wordle solver
