@@ -1,0 +1,4 @@
+# Ideas for repos
+
+frontend practice
+wordle solver
