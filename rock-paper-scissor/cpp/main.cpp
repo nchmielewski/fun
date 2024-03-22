@@ -1,6 +1,7 @@
 // #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -56,7 +57,7 @@ int main() {
       cout << "Please type normally" << endl;
       continue;
     }
-    else if (convert(x) == ("normally" || "Normally")) {
+    else if (convert(x) == "normally") {
       cout << "Alright wise guy, haha! :3" << endl;
       continue;
     }
