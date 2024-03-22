@@ -1,9 +1,10 @@
-#include <iostream>
+// #include <iostream>
 #include <cstdlib>
 #include <string>
 
 using namespace std;
 
+// return char
 string convert(string x){
   if (x == "rock" || x == "Rock" || x == "r" || x == "R") {
     return "r";
@@ -20,7 +21,7 @@ string convert(string x){
   else return "e";
 }
 
-// return 0/nothing 1/player 2/pc
+// return 0/nothing  1/player  2/pc
 int decide(int AI, string x) {
 
   switch(AI):
@@ -55,8 +56,8 @@ int main() {
       cout << "Please type normally" << endl;
       continue;
     }
-    else if (convert(x) == "normally") {
-      cout << "Alright wise guy, haha!" << endl;
+    else if (convert(x) == ("normally" || "Normally")) {
+      cout << "Alright wise guy, haha! :3" << endl;
       continue;
     }
 
