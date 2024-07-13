@@ -6,10 +6,12 @@ A yahtzee generator calculates all possible die rolls given a set of die.
 It will then provide the probability of scoring a box (assuming you know the rules of yahtzee) when the user enters a possible set of die.
 
 ### How are rolls done?
+There are 6^5 (7776) total possible combinations.
+
 Calculating for every possible set of die combinations will give us a static number of rolls.  We store these combinations in a list and later check the list for possible points.
 Combinations are calculated using a recursive function.  A 5 digit number is incremented using this function, the digits can only be in range of 1 to 6.
  
-There are 6^5 (7776) total possible combinations.  See help.txt for more information.  
+See help.txt for more information.  
 
 ### What is the logic behind rolling?
 The number of total possible combinations is derived from the same logic we use when counting regular/decimal (base-10 aka 0 to 9) numbers and binary numbers (base-2 aka 0 to 1).  
@@ -20,7 +22,7 @@ Then, we increase the next number to the left by one and we restart counting wit
 When we count in base-2 we also count from right to left; we count the same way, increasing the right-most (least-significant) number/bit until it reaches it's max value, which in base-2 is 1.
 The process is the same between each set, so the same logic can be applied to counting possible die aka base-6.
 
-### Why 7776 total possible combinations?
+## Why 7776 total possible combinations?
 ##### Devs: It's just counting in binary, but replace the range of numbers to 0-5.
 
 The way we come upon 7776 is by a concept called positional notation.  If you can count numbers, you intuitively already understand this concept.
