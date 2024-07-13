@@ -2,8 +2,8 @@
 This program is a work in progress.
 
 # Yahtzee Generator
-A yahtzee generator calculates all possible die rolls given a set of die.
-It will then provide the probability of scoring a box (assuming you know the rules of yahtzee) when the user enters a possible set of die.
+A yahtzee generator calculates all possible die rolls given a set of die and provides probabilities.
+
 
 ### How are rolls done?
 There are 6^5 (7776) total possible combinations.
