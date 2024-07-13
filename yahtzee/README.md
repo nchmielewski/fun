@@ -34,7 +34,7 @@ Let's say we want to find out the total possible combinations for a single base-
 To be crude and count it out: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 For a single base-10 digit the equation is: 10^1 = 10
 
-Now let's find the total possible combinations for a two base-10 digits.  How many numbers can you have with two digits which each can range from 0 to 9?
+Now let's find the total possible combinations of numbers using two base-10 digits.  How many numbers can you have with two digits which each can range from 0 to 9?
 To be crude: 00 -> 01 -> 02 ... 09 -> 10 -> 11 ... 19 -> 20 -> 21 ... 29 -> 30 -> 31 ... 89 -> 90 -> 91 ... 97 -> 98 -> 99
 The answer is 100.  The equation is: 10^2 = 100
 
@@ -54,7 +54,7 @@ The answer is 8: 2^3 = 8
 
 There comes a point where counting no longer helps, this is where the equation shines.  What if we have 64 base-2 digits?  
 2^64 = 1.8446744e+19
-That's a lot of bits, it's 2305843 terabytes!  Great googly moogly!
+That's a lot of bits, it's 2,305,843 terabytes!  Great googly moogly!
 
 #### Base-6 Example
 Now we come to how this is useful in the case of rolling die, and how I came up with 7776 possible combinations.  I'll assume you got the hang of the equation by now.
