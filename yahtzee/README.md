@@ -5,7 +5,7 @@ This program is a work in progress.
 A yahtzee generator calculates all possible die rolls given a set of die and provides probabilities.
 
 
-### How are rolls done?
+### How to "roll die"
 There are 6^5 (7776) total possible combinations.
 
 Calculating for every possible set of die combinations will give us a static number of rolls.  We store these combinations in a list and later check the list for possible points.
