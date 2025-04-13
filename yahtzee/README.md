@@ -2,14 +2,16 @@
 This program is a work in progress.
 
 # Yahtzee Generator
-A yahtzee generator calculates all possible die rolls given a set of die.
-It will then provide the probability of scoring a box (assuming you know the rules of yahtzee) when the user enters a possible set of die.
+A yahtzee generator calculates all possible die rolls given a set of die and provides probabilities.
 
-### How are rolls done?
+
+### How to "roll die"
+There are 6^5 (7776) total possible combinations.
+
 Calculating for every possible set of die combinations will give us a static number of rolls.  We store these combinations in a list and later check the list for possible points.
 Combinations are calculated using a recursive function.  A 5 digit number is incremented using this function, the digits can only be in range of 1 to 6.
  
-There are 6^5 (7776) total possible combinations.  See help.txt for more information.  
+See help.txt for more information.  
 
 ### What is the logic behind rolling?
 The number of total possible combinations is derived from the same logic we use when counting regular/decimal (base-10 aka 0 to 9) numbers and binary numbers (base-2 aka 0 to 1).  
@@ -34,7 +36,7 @@ Let's say we want to find out the total possible combinations for a single base-
 To be crude and count it out: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 For a single base-10 digit the equation is: 10^1 = 10
 
-Now let's find the total possible combinations for a two base-10 digits.  How many numbers can you have with two digits which each can range from 0 to 9?
+Now let's find the total possible combinations of numbers using two base-10 digits.  How many numbers can you have with two digits which each can range from 0 to 9?
 To be crude: 00 -> 01 -> 02 ... 09 -> 10 -> 11 ... 19 -> 20 -> 21 ... 29 -> 30 -> 31 ... 89 -> 90 -> 91 ... 97 -> 98 -> 99
 The answer is 100.  The equation is: 10^2 = 100
 
@@ -54,7 +56,7 @@ The answer is 8: 2^3 = 8
 
 There comes a point where counting no longer helps, this is where the equation shines.  What if we have 64 base-2 digits?  
 2^64 = 1.8446744e+19
-That's a lot of bits, it's 2305843 terabytes!  Great googly moogly!
+That's a lot of bits, it's 2,305,843 terabytes!  Great googly moogly!
 
 #### Base-6 Example
 Now we come to how this is useful in the case of rolling die, and how I came up with 7776 possible combinations.  I'll assume you got the hang of the equation by now.
