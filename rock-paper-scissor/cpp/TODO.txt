@@ -1,0 +1,4 @@
+TODO.txt
+
+Add handling for user entries with multiple words
+Make convert() cleaner

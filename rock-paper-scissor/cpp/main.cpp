@@ -1,11 +1,10 @@
-// #include <iostream>
 #include <cstdlib>
 #include <string>
 #include <iostream>
 
 using namespace std;
 
-// return char
+// return char string
 string convert(string x){
   if (x == "rock" || x == "Rock" || x == "r" || x == "R") {
     return "r";
@@ -24,23 +23,24 @@ string convert(string x){
 
 // return 0/nothing  1/player  2/pc
 int decide(int AI, string x) {
-
-  switch(AI):
+  switch(AI) {
     case 0:
       cout << "Computer picked rock" << endl;
       if (x == "p") return 1;
       else if (x == "s") return 2;
-      else return 0;
+      break;
     case 1:
       cout << "Computer picked paper" << endl;
       if (x == "s") return 1;
       else if (x == "r") return 2;
-      else return 0;
+      break;
     case 2:
       cout << "Computer picked scissors" << endl;
       if (x == "r") return 1;
       else if (x == "p") return 2;
-      else return 0;
+      break;
+    }
+    return 0;
 }
 
 int main() {
@@ -49,30 +49,30 @@ int main() {
   
   bool running = true;
   while (running) {
-    cout << "Enter your choice: " << x << endl;
+    x = "";   // Reset player input for loop
+    cout << "Enter your choice: " << x;
     cin >> x; // Get user input from the keyboard
-    
-    string player;
-    if (convert(x) == "e") {
-      cout << "Please type normally" << endl;
+    cout << endl;
+
+    if (x == "normally") {
+      cout << "Alright wise guy, haha! :3" << endl;
       continue;
     }
-    else if (convert(x) == "normally") {
-      cout << "Alright wise guy, haha! :3" << endl;
+    else if (convert(x) == "e") {
+      cout << "Please type normally" << endl;
       continue;
     }
 
     int AI = rand() % 3;    // 0 rock, 1 paper, 2 scissors
-    
-    int result = decide(AI, player);
+    int result = decide(AI, x);
 
-    if (result == 0) continue;
+    if (result == int(0)) cout << "Tie game!" << endl;
     else if (result == 1) {
       cout << "Congratulations!  You beat the Computer :D" << endl;
     }
     else if (result == 2) {
       cout << "You are a loser... dang." << endl;
-    }
+    }    
   }
   
 }
