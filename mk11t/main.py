@@ -20,7 +20,8 @@ kombatants = OrderedDict(
         21: 'Shao Kahn', 22: 'Skarlet', 23: 'Sonya Blade', 24: 'Sub-Zero',
         25: 'Shang Tsung', 26: 'Nightwolf', 27: 'Sindel', 28: 'Joker',
         29: 'Spawn', 30: 'Terminator T-800', 31: 'Fujin', 32: 'Sheeva',
-        33: 'Robocop', 34: 'Mileena', 35: 'Rain', 36: 'Rambo'
+        33: 'Robocop', 34: 'Mileena', 35: 'Rain', 36: 'Rambo',
+        37: 'Kollector'
     }.items(), key=lambda x: x[1])
 )
 
@@ -743,6 +744,7 @@ CHAR_STYLE = {
     'Kabal':            ("#0f0f0f", "#3a3a3a", "---"),
     'Kano':             ("#2a0000", "#880000", "(O)"),
     'Kitana':           ("#001030", "#002288", ">>>"),
+    'Kollector':        ("#120a1a", "#4a2a6b", "$$$"),
     'Kotal Kahn':       ("#2a0800", "#993300", "[*]"),
     'Kung Lao':         ("#1a1000", "#665500", "(^)"),
     'Liu Kang':         ("#2a0000", "#880000", "~~>"),
@@ -773,6 +775,15 @@ class CharacterSelectScreen:
     TILE_W = 112
     TILE_H = 130
     PAD = 6
+    GRID_LAYOUT = [
+        [None, "Shang Tsung", "Shao Kahn", "Frost", "Nightwolf", None],
+        ["Joker", "Johnny Cage", "Cassie Cage", "Sonya Blade", "Jax Briggs", "Spawn"],
+        ["Scorpion", "Noob Saibot", "Baraka", "Raiden", "Jacqui Briggs", "Sub-Zero"],
+        ["Kano", "Kabal", "Liu Kang", "Kitana", "Kung Lao", "Jade"],
+        ["Robocop", "Skarlet", "Erron Black", "D'Vorah", "Kotal Kahn", "Sheeva"],
+        ["Rambo", "Terminator T-800", "Geras", "Kollector", "Cetrion", "Mileena"],
+        [None, "Sindel", "Fujin", "Rain", None, None],
+    ]
     BG = "#0a0a0a"
     BORDER_DEFAULT = "#2a1500"
     BORDER_HOVER   = "#cc7700"
@@ -881,8 +892,16 @@ class CharacterSelectScreen:
         self.confirm_btn.grid(row=0, column=1)
 
         # ── Row 5: Scrollable character grid (expands to fill remaining space)
-        n = len(self.char_list)
-        rows = math.ceil(n / self.COLS)
+        self.layout_rows = [list(row) for row in self.GRID_LAYOUT]
+        known_chars = set(self.char_list)
+        placed = {name for row in self.layout_rows for name in row if name}
+        missing = [name for name in self.char_list if name not in placed]
+        while missing:
+            chunk = missing[:self.COLS]
+            missing = missing[self.COLS:]
+            self.layout_rows.append(chunk + [None] * (self.COLS - len(chunk)))
+
+        rows = len(self.layout_rows)
         grid_w = self.COLS * (self.TILE_W + self.PAD) + self.PAD
         grid_h = rows * (self.TILE_H + self.PAD) + self.PAD
 
@@ -926,13 +945,18 @@ class CharacterSelectScreen:
         # Build position lookup: name -> (x0, y0)
         self._tile_positions = {}
         self.tile_ids = {}
-        for idx, name in enumerate(self.char_list):
-            col = idx % self.COLS
-            row_i = idx // self.COLS
-            x0 = col * (self.TILE_W + self.PAD) + self.PAD
-            y0 = row_i * (self.TILE_H + self.PAD) + self.PAD
-            self._tile_positions[name] = (x0, y0)
-            self._draw_tile(name, x0, y0)
+        self._slot_lookup = {}
+        for row_i, row in enumerate(self.layout_rows):
+            for col, name in enumerate(row):
+                if not name:
+                    continue
+                if name not in known_chars:
+                    continue
+                x0 = col * (self.TILE_W + self.PAD) + self.PAD
+                y0 = row_i * (self.TILE_H + self.PAD) + self.PAD
+                self._tile_positions[name] = (x0, y0)
+                self._slot_lookup[(row_i, col)] = name
+                self._draw_tile(name, x0, y0)
 
     # ── Coordinate-based hit testing ─────────────────────────────────────
 
@@ -947,9 +971,7 @@ class CharacterSelectScreen:
         x0 = col * (self.TILE_W + self.PAD) + self.PAD
         y0 = row * (self.TILE_H + self.PAD) + self.PAD
         if x0 <= cx <= x0 + self.TILE_W and y0 <= cy <= y0 + self.TILE_H:
-            idx = row * self.COLS + col
-            if 0 <= idx < len(self.char_list):
-                return self.char_list[idx]
+            return self._slot_lookup.get((row, col))
         return None
 
     def _on_canvas_click(self, event):
@@ -1189,6 +1211,9 @@ class TournamentGUI:
             if W < 2 or H < 2:   # not yet realised
                 return
             cx, cy = W // 2, H // 2
+            top_title_y = max(28, int(H * 0.08))
+            top_subtitle_y = top_title_y + max(18, int(H * 0.04))
+            top_prompt_y = top_subtitle_y + max(16, int(H * 0.035))
 
             # Background layered red glow
             for r, c in [(int(H*0.75),"#0d0000"),(int(H*0.57),"#110000"),
@@ -1201,6 +1226,26 @@ class TournamentGUI:
             for dy, col in [(-int(H*0.18),"#cc0000"),(-int(H*0.175),"#880000"),
                              ( int(H*0.19),"#cc0000"),( int(H*0.185),"#880000")]:
                 canvas.create_rectangle(cx-bw//2, cy+dy, cx+bw//2, cy+dy+3, fill=col, outline="")
+
+            # Top text stays clear of menu art in both windowed and fullscreen layouts
+            canvas.create_text(
+                cx, top_title_y,
+                text="MORTAL KOMBAT TOURNAMENT BUILDER",
+                font=("Impact", max(16, int(H * 0.035)), "bold"),
+                fill="#cc0000"
+            )
+            canvas.create_text(
+                cx, top_subtitle_y,
+                text="SELECT YOUR DESTINY",
+                font=("Impact", max(10, int(H * 0.018))),
+                fill="#ff8800"
+            )
+            canvas.create_text(
+                cx, top_prompt_y,
+                text="(Set up a bracket or load a saved tournament)",
+                font=("Arial", max(8, int(H * 0.013))),
+                fill="#664444"
+            )
 
             logo = self._get_main_menu_logo(int(W * 0.72), int(H * 0.62))
             if logo:
@@ -1224,34 +1269,16 @@ class TournamentGUI:
                 ]:
                     canvas.create_line(*p0, *p1, fill="#ff6600", width=3)
 
-                # Title
-                canvas.create_text(cx+3, cy-int(H*0.065),
-                                    text="MORTAL KOMBAT",
-                                    font=("Impact", 32, "bold"), fill="#550000")
-                canvas.create_text(cx, cy-int(H*0.068),
-                                    text="MORTAL KOMBAT",
-                                    font=("Impact", 32, "bold"), fill="#cc0000")
-                canvas.create_text(cx, cy+int(H*0.01),
-                                    text="TOURNAMENT BUILDER",
-                                    font=("Impact", 15), fill="#ff6600")
-                canvas.create_text(cx, cy+int(H*0.085),
-                                    text="- - - - - - - - - - - - - - - - - - -",
-                                    font=("Impact", 9), fill="#440000")
-
                 canvas.create_text(
                     cx, cy + int(H * 0.16),
                     text=f"Place menu art at: {self.main_menu_image_path}",
                     font=("Arial", 9), fill="#664444"
                 )
 
-            # Footer
-            canvas.create_text(cx, H-16,
-                    text="SELECT YOUR DESTINY",
-                    font=("Impact", 9), fill="#ffd700")
-
-            # Button frame — always centred
+            # Button frame — anchored lower-middle so text never collides with menu art
+            buttons_y = min(H - 80, cy + int(H * 0.30))
             canvas.delete("btn_win")
-            canvas.create_window(cx, cy + int(H*0.26), window=btn_frame, tags="btn_win")
+            canvas.create_window(cx, buttons_y, window=btn_frame, tags="btn_win")
 
         # Build buttons once (outside _draw so they're not recreated on every resize)
         btn_frame = tk.Frame(canvas, bg="#000000")
@@ -1426,6 +1453,11 @@ class TournamentGUI:
                   command=self.save_tournament,
                   bg="#0d0000", fg="#cc4400", activebackground="#220000",
                   activeforeground="#ff8800", font=("Beast", 11),
+                  relief="flat", padx=10, pady=5, cursor="hand2").pack(side="left", padx=6)
+        tk.Button(button_frame, text="RETURN TO MAIN MENU",
+                  command=self.setup_initial_screen,
+                  bg="#120000", fg="#ff8800", activebackground="#330000",
+                  activeforeground="#ffffff", font=("Beast", 11),
                   relief="flat", padx=10, pady=5, cursor="hand2").pack(side="left", padx=6)
         tk.Label(self.root, text="TOURNAMENT BRACKET",
                  font=("Beast", 14, "bold"), fg="#cc0000", bg="#0a0000").pack(pady=4)

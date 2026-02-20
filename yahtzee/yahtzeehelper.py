@@ -34,18 +34,14 @@ def FourOfAKind(dice):
 
 # TODO complete logic
 def SmallStraight(dice):
-    ctr = 0
-    for x in dice:
-        # if not in sequence, new x
-        pass
-        # if next, index ctr
-
-    dice = tuple(dict.fromkeys(dice))  # removes duplicates
-    return 15 if sorted(dice) == (1, 2, 3, 4) or (2, 3, 4, 5) or (3, 4, 5, 6) else 0
+    unique_dice = set(dice)
+    sequences = ({1, 2, 3, 4}, {2, 3, 4, 5}, {3, 4, 5, 6})
+    return 15 if any(seq.issubset(unique_dice) for seq in sequences) else 0
 
 
 def LargeStraight(dice):
-    return 20 if sorted(dice) == (1, 2, 3, 4, 5) or (2, 3, 4, 5, 6) else 0
+    unique_sorted = sorted(set(dice))
+    return 20 if unique_sorted in ([1, 2, 3, 4, 5], [2, 3, 4, 5, 6]) else 0
 
 
 def Ones(dice):
