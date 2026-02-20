@@ -21,8 +21,7 @@ kombatants = OrderedDict(
         25: 'Shang Tsung', 26: 'Nightwolf', 27: 'Sindel', 28: 'Joker',
         29: 'Spawn', 30: 'Terminator T-800', 31: 'Fujin', 32: 'Sheeva',
         33: 'Robocop', 34: 'Mileena', 35: 'Rain', 36: 'Rambo'
-    }.items()),
-    key=lambda x: x[1]
+    }.items(), key=lambda x: x[1])
 )
 
 # -------------------------
@@ -149,10 +148,12 @@ class TestYourMightScreen:
         "#FF0000", "#FF2200", "#FF4400", "#FF6600",
         "#FF8800", "#FFAA00", "#FFCC00", "#FFEE33",
     ]
+    FIRE_CORE_COLORS = ["#FFD27A", "#FFC85A", "#FFB52B", "#FF9F1C"]
 
-    def __init__(self, parent, on_done):
+    def __init__(self, parent, on_done, position="center"):
         self.parent = parent
         self.on_done = on_done
+        self.position = position
         self.win = Toplevel(parent)
         self.win.title("")
         self.win.configure(bg="black")
@@ -160,11 +161,13 @@ class TestYourMightScreen:
         self.win.overrideredirect(True)  # borderless
 
         self.W, self.H = 700, 460
-        # Center on screen
         sw = parent.winfo_screenwidth()
         sh = parent.winfo_screenheight()
         x = (sw - self.W) // 2
-        y = (sh - self.H) // 2
+        if self.position == "bottom":
+            y = max(0, sh - self.H - 28)
+        else:
+            y = (sh - self.H) // 2
         self.win.geometry(f"{self.W}x{self.H}+{x}+{y}")
 
         self.canvas = tk.Canvas(
@@ -175,7 +178,8 @@ class TestYourMightScreen:
 
         self._alive = True
         self.frame = 0
-        self.particles = []
+        self.flames = []
+        self.embers = []
         self._timer = 0          # counts frames until auto-close
         self._total_frames = 120 # ~4 seconds at 30ms
         self._text_ids = []
@@ -223,41 +227,10 @@ class TestYourMightScreen:
         self.frame += 1
         self._timer += 1
 
-        cx = self.W // 2
-
-        # Spawn fire particles along the bottom
-        for _ in range(8):
-            x = random.randint(20, self.W - 20)
-            self.particles.append({
-                "id": self.canvas.create_oval(0,0,1,1, fill="#FF4400", outline=""),
-                "x": float(x),
-                "y": float(self.H - 10),
-                "vx": random.uniform(-0.8, 0.8),
-                "vy": random.uniform(-3.5, -1.8),
-                "life": random.randint(22, 40),
-                "max_life": 40,
-                "size": random.uniform(6, 16),
-            })
-
-        # Update particles
-        alive = []
-        for p in self.particles:
-            p["life"] -= 1
-            p["x"] += p["vx"] + math.sin(p["y"] * 0.05 + t * 0.1) * 0.5
-            p["y"] += p["vy"]
-            p["vy"] *= 0.97  # slight drag
-            if p["life"] > 0:
-                ratio = p["life"] / p["max_life"]
-                ci = min(int((1 - ratio) * len(self.FIRE_COLORS)), len(self.FIRE_COLORS) - 1)
-                color = self.FIRE_COLORS[ci]
-                sz = p["size"] * ratio
-                x, y = p["x"], p["y"]
-                self.canvas.coords(p["id"], x - sz, y - sz, x + sz, y + sz)
-                self.canvas.itemconfig(p["id"], fill=color)
-                alive.append(p)
-            else:
-                self.canvas.delete(p["id"])
-        self.particles = alive
+        self._spawn_flames()
+        self._update_flames(t)
+        self._spawn_embers()
+        self._update_embers(t)
 
         # Raise text above particles
         self.canvas.tag_raise(self.title_id)
@@ -282,10 +255,199 @@ class TestYourMightScreen:
 
         self.win.after(33, self._animate)
 
+    def _spawn_flames(self):
+        # Build broad, teardrop-shaped "licks" from the floor for a less "dotty" fire effect.
+        for _ in range(4):
+            x = random.randint(25, self.W - 25)
+            w = random.uniform(12, 22)
+            h = random.uniform(90, 180)
+            outer = self.canvas.create_polygon(0, 0, 0, 0, 0, 0, fill="#FF3300", outline="")
+            core = self.canvas.create_polygon(0, 0, 0, 0, 0, 0, fill="#FFCC55", outline="")
+            self.flames.append({
+                "outer": outer,
+                "core": core,
+                "x": float(x),
+                "base_y": float(self.H - random.randint(0, 12)),
+                "height": h,
+                "width": w,
+                "life": random.randint(16, 28),
+                "max_life": 28,
+                "drift": random.uniform(-0.6, 0.6),
+                "phase": random.uniform(0, math.tau),
+            })
+
+    def _update_flames(self, t):
+        alive = []
+        for f in self.flames:
+            f["life"] -= 1
+            f["x"] += f["drift"] + math.sin(t * 0.17 + f["phase"]) * 0.8
+            f["height"] *= 0.982
+            if f["life"] <= 0 or f["height"] < 25:
+                self.canvas.delete(f["outer"])
+                self.canvas.delete(f["core"])
+                continue
+
+            ratio = f["life"] / f["max_life"]
+            width = max(4, f["width"] * (0.7 + ratio * 0.4))
+            height = f["height"] * (0.8 + ratio * 0.4)
+            tip_sway = math.sin(t * 0.21 + f["phase"]) * width * 0.55
+            x, by = f["x"], f["base_y"]
+
+            outer_pts = [
+                x - width, by,
+                x + width, by,
+                x + width * 0.36, by - height * 0.48,
+                x + tip_sway, by - height,
+                x - width * 0.36, by - height * 0.48,
+            ]
+            core_w = width * 0.48
+            core_h = height * 0.72
+            core_pts = [
+                x - core_w, by,
+                x + core_w, by,
+                x + core_w * 0.28, by - core_h * 0.46,
+                x + tip_sway * 0.55, by - core_h,
+                x - core_w * 0.28, by - core_h * 0.46,
+            ]
+            self.canvas.coords(f["outer"], *outer_pts)
+            self.canvas.coords(f["core"], *core_pts)
+
+            oc = self.FIRE_COLORS[min(len(self.FIRE_COLORS) - 1, int((1 - ratio) * 6) + 1)]
+            cc = self.FIRE_CORE_COLORS[min(len(self.FIRE_CORE_COLORS) - 1, int((1 - ratio) * 3))]
+            self.canvas.itemconfig(f["outer"], fill=oc)
+            self.canvas.itemconfig(f["core"], fill=cc)
+            alive.append(f)
+        self.flames = alive
+
+    def _spawn_embers(self):
+        for _ in range(3):
+            x = random.randint(22, self.W - 22)
+            ember = self.canvas.create_rectangle(0, 0, 0, 0, fill="#FFAA33", outline="")
+            self.embers.append({
+                "id": ember,
+                "x": float(x),
+                "y": float(self.H - random.randint(4, 20)),
+                "vx": random.uniform(-0.55, 0.55),
+                "vy": random.uniform(-3.4, -1.8),
+                "life": random.randint(18, 36),
+                "max_life": 36,
+                "size": random.uniform(1.4, 3.5),
+                "phase": random.uniform(0, math.tau),
+            })
+
+    def _update_embers(self, t):
+        alive = []
+        for e in self.embers:
+            e["life"] -= 1
+            e["x"] += e["vx"] + math.sin(t * 0.14 + e["phase"]) * 0.2
+            e["y"] += e["vy"]
+            e["vy"] *= 0.985
+            if e["life"] <= 0:
+                self.canvas.delete(e["id"])
+                continue
+
+            ratio = e["life"] / e["max_life"]
+            size = max(1.0, e["size"] * ratio)
+            color = self.FIRE_COLORS[min(len(self.FIRE_COLORS) - 1, int((1 - ratio) * 7))]
+            self.canvas.coords(e["id"], e["x"] - size, e["y"] - size, e["x"] + size, e["y"] + size)
+            self.canvas.itemconfig(e["id"], fill=color)
+            alive.append(e)
+        self.embers = alive
+
     def _finish(self):
         self._alive = False
         self.win.destroy()
         self.on_done()
+
+
+# -------------------------
+# Skull-on-Fire Popup
+# -------------------------
+class SkullFirePopup:
+    FIRE_COLORS = ["#FF3300", "#FF5500", "#FF7700", "#FFAA00", "#FFD45A"]
+
+    def __init__(self, parent):
+        self.parent = parent
+        self.win = Toplevel(parent)
+        self.win.title("")
+        self.win.configure(bg="#000000")
+        self.win.resizable(False, False)
+        self.win.overrideredirect(True)
+
+        self.W, self.H = 300, 220
+        sw = parent.winfo_screenwidth()
+        sh = parent.winfo_screenheight()
+        x = (sw - self.W) // 2
+        y = max(0, sh - self.H - 18)
+        self.win.geometry(f"{self.W}x{self.H}+{x}+{y}")
+
+        self.canvas = tk.Canvas(self.win, width=self.W, height=self.H, bg="#000000", highlightthickness=0)
+        self.canvas.pack()
+
+        self.frame = 0
+        self._alive = True
+        self.flames = []
+        self.skull = self.canvas.create_text(self.W // 2, self.H - 70, text="💀", font=("Arial", 60), fill="white")
+        self.label = self.canvas.create_text(self.W // 2, self.H - 24, text="F I N I S H   H I M", font=("Impact", 16), fill="#CC0000")
+        self._animate()
+
+    def _spawn_flame(self):
+        x = random.randint(35, self.W - 35)
+        self.flames.append({
+            "id": self.canvas.create_polygon(0, 0, 0, 0, 0, 0, fill="#FF5500", outline=""),
+            "x": float(x),
+            "base_y": float(self.H - 28),
+            "w": random.uniform(8, 18),
+            "h": random.uniform(45, 95),
+            "life": random.randint(11, 20),
+            "max_life": 20,
+            "phase": random.uniform(0, math.tau),
+        })
+
+    def _animate(self):
+        if not self._alive:
+            return
+        t = self.frame
+        self.frame += 1
+
+        for _ in range(4):
+            self._spawn_flame()
+
+        alive = []
+        for f in self.flames:
+            f["life"] -= 1
+            if f["life"] <= 0:
+                self.canvas.delete(f["id"])
+                continue
+            ratio = f["life"] / f["max_life"]
+            tip = math.sin(t * 0.23 + f["phase"]) * f["w"] * 0.6
+            x, by = f["x"], f["base_y"]
+            h = f["h"] * (0.75 + ratio * 0.45)
+            w = f["w"] * (0.55 + ratio * 0.6)
+            pts = [
+                x - w, by,
+                x + w, by,
+                x + w * 0.3, by - h * 0.45,
+                x + tip, by - h,
+                x - w * 0.3, by - h * 0.45,
+            ]
+            color = self.FIRE_COLORS[min(len(self.FIRE_COLORS) - 1, int((1 - ratio) * 4))]
+            self.canvas.coords(f["id"], *pts)
+            self.canvas.itemconfig(f["id"], fill=color)
+            alive.append(f)
+        self.flames = alive
+
+        bob = math.sin(t * 0.19) * 5
+        self.canvas.coords(self.skull, self.W // 2, self.H - 72 + bob)
+        skull_color = self.FIRE_COLORS[(t // 3) % len(self.FIRE_COLORS)]
+        self.canvas.itemconfig(self.skull, fill=skull_color)
+
+        if self.frame >= 54:
+            self._alive = False
+            self.win.destroy()
+            return
+
+        self.win.after(33, self._animate)
 
 
 # -------------------------
@@ -627,7 +789,7 @@ class CharacterSelectScreen:
         self.on_back = on_back
 
         self.selected = []
-        self.char_list = list(kombatants.values())
+        self.char_list = [c for c in kombatants.values() if isinstance(c, str)]
         self.portraits = {}
 
         # FIX 1: initialise confirm_btn to None BEFORE _build_ui draws tiles
@@ -673,13 +835,13 @@ class CharacterSelectScreen:
         # ── Row 2: Name entry (always fully visible) ──────────────────────
         name_bar = tk.Frame(self.parent, bg="#0d0d0d", pady=6)
         name_bar.pack(fill="x")
-        tk.Label(name_bar, text="PLAYER NAME:", font=("Impact", 11),
-                 fg="#886633", bg="#0d0d0d").pack(side="left", padx=(16, 6))
+        tk.Label(name_bar, text="PLAYER NAME:", font=("Impact", 15, "bold"),
+                 fg="#8b0000", bg="#0d0d0d").pack(side="left", padx=(16, 8))
         self.name_var = tk.StringVar()
         name_entry = tk.Entry(
             name_bar, textvariable=self.name_var, width=22,
-            bg="#1a0a00", fg="#ff8800", insertbackground="#ff8800",
-            font=("Impact", 12), relief="solid", bd=1
+            bg="#1a0a00", fg="#8b0000", insertbackground="#8b0000",
+            font=("Impact", 16, "bold"), relief="solid", bd=1
         )
         name_entry.pack(side="left")
         name_entry.focus_set()
@@ -696,6 +858,9 @@ class CharacterSelectScreen:
         # ── Row 4: Bottom action bar (packed BEFORE canvas so it's always visible)
         btn_bar = tk.Frame(self.parent, bg="#0a0000", pady=6)
         btn_bar.pack(fill="x", side="bottom")
+        btn_bar.grid_columnconfigure(0, weight=1)
+        btn_bar.grid_columnconfigure(1, weight=1)
+        btn_bar.grid_columnconfigure(2, weight=1)
 
         if self.on_back:
             tk.Button(
@@ -703,7 +868,7 @@ class CharacterSelectScreen:
                 bg="#1a0a00", fg="#cc5500", activebackground="#330e00",
                 activeforeground="#ff8800", font=("Impact", 12),
                 relief="flat", padx=14, pady=6, cursor="hand2"
-            ).pack(side="left", padx=12)
+            ).grid(row=0, column=0, sticky="w", padx=12)
 
         self.confirm_btn = tk.Button(
             btn_bar, text="CONFIRM SELECTION  >",
@@ -713,7 +878,7 @@ class CharacterSelectScreen:
             relief="flat", padx=20, pady=6, cursor="hand2",
             state="disabled"
         )
-        self.confirm_btn.pack(side="right", padx=12)
+        self.confirm_btn.grid(row=0, column=1)
 
         # ── Row 5: Scrollable character grid (expands to fill remaining space)
         n = len(self.char_list)
@@ -968,7 +1133,41 @@ class TournamentGUI:
         os.makedirs("tournament_saves", exist_ok=True)
         self.canvas_font = ("Beast", 10)
         self.audio = _audio
+        self.main_menu_image_path = os.path.join("images", "main_menu.png")
+        self._menu_logo_source = None
+        self._menu_logo_cache = {}
+        self._menu_logo_tk = None
+        self._load_main_menu_logo_source()
         self.setup_initial_screen()
+
+    def _load_main_menu_logo_source(self):
+        self._menu_logo_source = None
+        self._menu_logo_cache.clear()
+        if not os.path.exists(self.main_menu_image_path):
+            return
+        try:
+            from PIL import Image
+            self._menu_logo_source = Image.open(self.main_menu_image_path).convert("RGBA")
+        except Exception:
+            self._menu_logo_source = None
+
+    def _get_main_menu_logo(self, max_w, max_h):
+        if self._menu_logo_source is None:
+            return None
+        max_w = max(1, int(max_w))
+        max_h = max(1, int(max_h))
+        key = (max_w, max_h)
+        if key in self._menu_logo_cache:
+            return self._menu_logo_cache[key]
+        try:
+            from PIL import ImageTk
+            img = self._menu_logo_source.copy()
+            img.thumbnail((max_w, max_h))
+            tk_img = ImageTk.PhotoImage(img)
+            self._menu_logo_cache[key] = tk_img
+            return tk_img
+        except Exception:
+            return None
 
     # -------------------------
     # Initial Screen
@@ -1003,36 +1202,47 @@ class TournamentGUI:
                              ( int(H*0.19),"#cc0000"),( int(H*0.185),"#880000")]:
                 canvas.create_rectangle(cx-bw//2, cy+dy, cx+bw//2, cy+dy+3, fill=col, outline="")
 
-            # Logo box
-            bx, by = int(W*0.26), int(H*0.17)
-            canvas.create_rectangle(cx-bx, cy-by, cx+bx, cy+by,
-                                     fill="#0a0000", outline="#cc0000", width=2)
-            canvas.create_rectangle(cx-bx+4, cy-by+4, cx+bx-4, cy+by-4,
-                                     fill="", outline="#550000", width=1)
+            logo = self._get_main_menu_logo(int(W * 0.72), int(H * 0.62))
+            if logo:
+                self._menu_logo_tk = logo  # keep reference alive
+                canvas.create_image(cx, cy - int(H * 0.03), image=logo)
+            else:
+                # Logo box
+                bx, by = int(W*0.26), int(H*0.17)
+                canvas.create_rectangle(cx-bx, cy-by, cx+bx, cy+by,
+                                         fill="#0a0000", outline="#cc0000", width=2)
+                canvas.create_rectangle(cx-bx+4, cy-by+4, cx+bx-4, cy+by-4,
+                                         fill="", outline="#550000", width=1)
 
-            # Gold corner accents
-            sz = 14
-            for p0, p1 in [
-                ((cx-bx,    cy-by),(cx-bx+sz,cy-by)),  ((cx-bx,   cy-by),(cx-bx,   cy-by+sz)),
-                ((cx+bx-sz, cy-by),(cx+bx,   cy-by)),  ((cx+bx,   cy-by),(cx+bx,   cy-by+sz)),
-                ((cx-bx,    cy+by-sz),(cx-bx, cy+by)), ((cx-bx,   cy+by),(cx-bx+sz,cy+by)),
-                ((cx+bx-sz, cy+by),(cx+bx,   cy+by)),  ((cx+bx,   cy+by-sz),(cx+bx,cy+by)),
-            ]:
-                canvas.create_line(*p0, *p1, fill="#ff6600", width=3)
+                # Gold corner accents
+                sz = 14
+                for p0, p1 in [
+                    ((cx-bx,    cy-by),(cx-bx+sz,cy-by)),  ((cx-bx,   cy-by),(cx-bx,   cy-by+sz)),
+                    ((cx+bx-sz, cy-by),(cx+bx,   cy-by)),  ((cx+bx,   cy-by),(cx+bx,   cy-by+sz)),
+                    ((cx-bx,    cy+by-sz),(cx-bx, cy+by)), ((cx-bx,   cy+by),(cx-bx+sz,cy+by)),
+                    ((cx+bx-sz, cy+by),(cx+bx,   cy+by)),  ((cx+bx,   cy+by-sz),(cx+bx,cy+by)),
+                ]:
+                    canvas.create_line(*p0, *p1, fill="#ff6600", width=3)
 
-            # Title
-            canvas.create_text(cx+3, cy-int(H*0.065),
-                                text="MORTAL KOMBAT",
-                                font=("Impact", 32, "bold"), fill="#550000")
-            canvas.create_text(cx, cy-int(H*0.068),
-                                text="MORTAL KOMBAT",
-                                font=("Impact", 32, "bold"), fill="#cc0000")
-            canvas.create_text(cx, cy+int(H*0.01),
-                                text="TOURNAMENT BUILDER",
-                                font=("Impact", 15), fill="#ff6600")
-            canvas.create_text(cx, cy+int(H*0.085),
-                                text="- - - - - - - - - - - - - - - - - - -",
-                                font=("Impact", 9), fill="#440000")
+                # Title
+                canvas.create_text(cx+3, cy-int(H*0.065),
+                                    text="MORTAL KOMBAT",
+                                    font=("Impact", 32, "bold"), fill="#550000")
+                canvas.create_text(cx, cy-int(H*0.068),
+                                    text="MORTAL KOMBAT",
+                                    font=("Impact", 32, "bold"), fill="#cc0000")
+                canvas.create_text(cx, cy+int(H*0.01),
+                                    text="TOURNAMENT BUILDER",
+                                    font=("Impact", 15), fill="#ff6600")
+                canvas.create_text(cx, cy+int(H*0.085),
+                                    text="- - - - - - - - - - - - - - - - - - -",
+                                    font=("Impact", 9), fill="#440000")
+
+                canvas.create_text(
+                    cx, cy + int(H * 0.16),
+                    text=f"Place menu art at: {self.main_menu_image_path}",
+                    font=("Arial", 9), fill="#664444"
+                )
 
             # Footer
             canvas.create_text(cx, H-16,
@@ -1172,7 +1382,7 @@ class TournamentGUI:
             self.show_player_input()
         else:
             self.audio.stop()
-            self._show_test_your_might()
+            self.generate_tournament()
 
     def _on_player_back(self):
         """Called by CharacterSelectScreen when player hits Back."""
@@ -1184,8 +1394,8 @@ class TournamentGUI:
         self.entries = self.entries[:-count]
         self.show_player_input()
 
-    def _show_test_your_might(self):
-        TestYourMightScreen(self.root, self.generate_tournament)
+    def _show_test_your_might(self, on_done, position="center"):
+        TestYourMightScreen(self.root, on_done, position=position)
 
     # -------------------------
     # Generate Tournament
@@ -1325,6 +1535,9 @@ class TournamentGUI:
     # Live Tracker
     # -------------------------
     def open_live_tracker(self):
+        self._show_test_your_might(self._open_live_tracker_window, position="bottom")
+
+    def _open_live_tracker_window(self):
         tracker = Toplevel(self.root)
         tracker.title("Live Tournament Tracker")
         tracker.configure(bg="#0a0a0a")
@@ -1390,6 +1603,7 @@ class TournamentGUI:
 
     def select_winner(self, winner_node, loser_node, tracker_window):
         self.audio.play(os.path.join("mp3", "bracket.mp3"), loop=False)
+        SkullFirePopup(self.root)
         self.current_node.winner = winner_node.name
         self.current_node.name = winner_node.name
         self.update_node_color(self.current_node, "green")
